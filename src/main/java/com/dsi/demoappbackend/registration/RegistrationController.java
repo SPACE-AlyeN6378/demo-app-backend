@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import java.security.cert.CertificateExpiredException;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping(path = "api/v1/registration")
 @AllArgsConstructor
@@ -24,11 +25,13 @@ public class RegistrationController {
         return registrationService.confirmToken(token);
     }
 
-    @PostMapping(path = "new_token/{user_id}")
-    public String newToken(@PathVariable("user_id") Long id) {
-        return registrationService.newToken(id);
+//    @PostMapping(path = "new_token/{user_id}")
+//    public String newToken(@PathVariable("user_id") Long id) {
+//        return registrationService.newToken(id);
+//    }
+    @GetMapping(path = "reconfirm")
+    public String resend(@RequestParam("token") String token) {
+        return registrationService.resendEmail(token);
     }
-
-
 
 }

@@ -1,15 +1,19 @@
 package com.dsi.demoappbackend.registration;
 
 import com.dsi.demoappbackend.appuser.AppUser;
+import com.dsi.demoappbackend.appuser.AppUserRepository;
 import com.dsi.demoappbackend.appuser.AppUserRole;
 import com.dsi.demoappbackend.appuser.AppUserService;
 import com.dsi.demoappbackend.email.EmailSender;
 import com.dsi.demoappbackend.email.EmailValidator;
 import com.dsi.demoappbackend.email.InvalidEmailException;
 import com.dsi.demoappbackend.registration.token.ConfirmationToken;
+import com.dsi.demoappbackend.registration.token.ConfirmationTokenRepository;
 import com.dsi.demoappbackend.registration.token.ConfirmationTokenService;
 import lombok.AllArgsConstructor;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
@@ -27,6 +31,7 @@ public class RegistrationService {
     private final EmailValidator emailValidator;
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSender emailSender;
+    private final EmailSender emailResender;
 
     public String register(RegistrationRequest request) throws InvalidEmailException {
         boolean isValidEmail = emailValidator.test(request.getEmail());
@@ -44,7 +49,7 @@ public class RegistrationService {
                 )
         );
 
-        String link = "http://localhost:8080/api/v1/registration/confirm?token=" + token;
+        String link = "http://localhost:3000/conf/" + token;
         emailSender.send(
                 request.getEmail(),
                 buildEmail(request.getFirstName(), link));
@@ -53,21 +58,23 @@ public class RegistrationService {
     }
 
     // Do that when your current token expires
-    public String resendEmail(Long id) {
-        String token = appUserService.makeNewToken(id);
-        AppUser appUser = appUserService.getAppUser(id);
+    public String resendEmail(String expiredToken) {
 
-        String link = "http://localhost:8080/api/v1/registration/confirm?token=" + token;
-        emailSender.send(
+        if (confirmationTokenService.getToken(expiredToken).isEmpty()) {
+            throw new EntityNotFoundException("token not found");
+        }
+
+        AppUser appUser = confirmationTokenService.getToken(expiredToken).get().getAppUser();
+        String token = appUserService.makeNewToken(appUser);
+
+        String link = "http://localhost:3000/conf/" + token;
+        emailResender.send(
             appUser.getEmail(),
                 buildEmail(appUser.getFirstName(), link));
 
         return token;
     }
 
-    public String newToken(Long id) {
-        return appUserService.makeNewToken(id);
-    }
 
     @Transactional
     public String confirmToken(String token) throws CertificateExpiredException {
@@ -88,32 +95,14 @@ public class RegistrationService {
         appUserService.enableAppUser(
             confirmationToken.getAppUser().getEmail());
 
-
-        String confirmedHtml = "";
-        try {
-
-            File html_file = new File("/Users/aly/IdeaProjects/demo-app-backend/src/main/resources/static/confirmpage.html");
-            // File html_file = new File("/home/dsi/IdeaProjects/ATSProject/src/main/html/confirmpage.html");
-            Scanner myReader = new Scanner(html_file);
-            while (myReader.hasNextLine()) {
-                confirmedHtml += myReader.nextLine();
-            }
-            myReader.close();
-
-        } catch (FileNotFoundException e) {
-            confirmedHtml += "confirmed";
-        }
-
-        return confirmedHtml;
+        return "confirmed";
     }
 
     private String buildEmail(String name, String link) {
 
         String emailBody = "";
         try {
-            // TODO: Consider changing
-            File html_file = new File("/Users/aly/IdeaProjects/demo-app-backend/src/main/resources/static/emailbody.html");
-            // File html_file = new File("/home/dsi/IdeaProjects/ATSProject/src/main/html/emailbody.html");
+            File html_file = new File("/home/dsi/IdeaProjects/demo-app-backend/src/main/resources/static/emailbody.html");
             Scanner myReader = new Scanner(html_file);
             while (myReader.hasNextLine()) {
                 emailBody += myReader.nextLine();

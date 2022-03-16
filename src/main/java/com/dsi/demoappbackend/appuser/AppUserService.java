@@ -78,13 +78,7 @@ public class AppUserService {
         return appUserRepository.getById(appUserId);
     }
 
-    public String makeNewToken(Long appUserId) {
-
-        if (!appUserRepository.existsById(appUserId)) {
-            throw new EntityNotFoundException("The user with id "+appUserId+" does not exist.");
-        }
-
-        AppUser appUser = appUserRepository.getById(appUserId);
+    public String makeNewToken(AppUser appUser) {
 
         String token = UUID.randomUUID().toString();
         ConfirmationToken confirmationToken = new ConfirmationToken(

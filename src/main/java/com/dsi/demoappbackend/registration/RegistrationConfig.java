@@ -24,7 +24,7 @@ public class RegistrationConfig {
             AppUser admin = new AppUser(
                     "Aly",
                     "Mooltazeem",
-                    "alymooltazeem@gmail.com",
+                    "aly.mooltazeem@dsinnovators.com",
                     "helloworld",
                     AppUserRole.ADMIN
             );
