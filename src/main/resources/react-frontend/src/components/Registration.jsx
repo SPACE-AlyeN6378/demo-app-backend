@@ -99,7 +99,7 @@ class Registration extends Component {
                 <main>
                 <div className='container'>
                     <div className='row'>
-                        <div className = "card col-md-6 offset-md-3 offset-md-3">
+                        <div className = "card col-md-6 offset-md-3 offset-md-3 p-4">
                             <h2 className='text-center p-2'>Registration form</h2>
                             <div className='card-body'>
                                 {this.ErrorBox()}
@@ -160,7 +160,7 @@ class Registration extends Component {
                                     <br></br>
 
                                     <input type='submit' className="btn btn-success m-2" name='Register'/>
-                                    <button type='button' className="btn btn-link m-2" onClick={this.cancel}>Cancel</button>
+                                    <button type='button' className="btn btn-link m-2" onClick={this.cancel}>Back to Login</button>
                                     
                                 </form>
                                 {this.ApprovedBox()}

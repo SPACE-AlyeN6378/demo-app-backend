@@ -1,11 +1,12 @@
 import Login from './components/Login';
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
-import {BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import UserService from './services/UserService';
+// import UserService from './services/UserService';
 import { Link } from 'react-router-dom';
 import Registration from './components/Registration';
 import EmailConfirmed from './components/EmailConfirmed';
+
 
 class App extends Component {
 
@@ -13,38 +14,44 @@ class App extends Component {
     email: null,
     first_name: ""
   }
+
   
   changeEmail = (input) => {
     this.setState({email: input});
   }
 
+  changeName = (input) => {
+    this.setState({first_name: input});
+  } 
+
   showLoginStatus() {
     
     if (this.state.email !== null && this.state.email.length !== 0) {
-      UserService.getUser(this.state.email).then((res) => this.setState({first_name: res.data.firstName}));
       return (
         <div>
           <h3 align='left'>Hello, {this.state.first_name}!</h3>
-          <Link type='button' className='btn btn-danger' to='/login'>Logout</Link>
+          
+          <button type='button' className='btn btn-danger' onClick={this.logout}>Log Out</button>
         </div>
       );
     }
     else {
       return (
         <div>
-          <h3>Hello Anonymous! You are not signed in.</h3>
+          <h3>Hello there! You are not signed in.</h3>
           <Link type='button' className='btn btn-primary' to='/login'>Sign In</Link>
         </div>
       );
     }
   }
 
-  componentWillUnmount() {
-    this.setState(this.state.email);
-  }
+  // componentWillUnmount() {
+  //   this.setState({email: null, first_name: ""});
+  // }
 
   logout = () => {
-    this.setState({email: null, first_name: ""});
+    console.log(`${this.state.first_name} logged out`);
+    this.setState({google_auth: false, email: null, first_name: ""});
   }
 
 
@@ -64,10 +71,11 @@ class App extends Component {
               </div>
               <div>
                 {this.showLoginStatus()}
+                
               </div>
             </Route>
             <Route path="/login">
-              <Login appChangeState = {this.changeEmail}/>
+              <Login app_changeEmail = {this.changeEmail} app_changeName = {this.changeName}/>
             </Route>
             <Route path="/register">
               <Registration />
