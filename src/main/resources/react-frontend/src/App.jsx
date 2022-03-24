@@ -6,6 +6,9 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Registration from './components/Registration';
 import EmailConfirmed from './components/EmailConfirmed';
+import Navbar from './components/Navbar';
+import ChatRoom from './components/ChatRoom';
+import Home from './Home';
 
 
 class App extends Component {
@@ -22,7 +25,11 @@ class App extends Component {
 
   changeName = (input) => {
     this.setState({first_name: input});
-  } 
+  }
+
+  getName = () => {
+    return this.state.first_name;
+  }
 
   showLoginStatus() {
     
@@ -61,21 +68,12 @@ class App extends Component {
 
       <Router>
         <div className='App'>
-        
+          <Navbar />
           <Switch>
-            <Route exact path="/">
-              <div>
-                <h1 align="left">Home Page</h1>
-                <p align="left">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                <br></br>
-              </div>
-              <div>
-                {this.showLoginStatus()}
-                
-              </div>
-            </Route>
+            <Route exact path="/" render={() => (this.state.email !== null) ? <ChatRoom app_getName = {this.getName}/> : <Home /> } />
+              
             <Route path="/login">
-              <Login app_changeEmail = {this.changeEmail} app_changeName = {this.changeName}/>
+              <Login app_changeEmail = {this.changeEmail} app_changeName = {this.changeName}/> 
             </Route>
             <Route path="/register">
               <Registration />

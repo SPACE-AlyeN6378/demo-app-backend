@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import GoogleLogin from 'react-google-login';
-import googleCredentials from '../credentials.json';
 import { withRouter } from 'react-router-dom';
 
 
@@ -20,7 +19,7 @@ class GoogleButton extends Component {
     render() { 
         return ( <div>
             <GoogleLogin
-            clientId={googleCredentials.web.client_id}
+            clientId="56680496624-gkhmrlnuq8i5ouru4m842l6tji4lggv7.apps.googleusercontent.com"
             buttonText='Login with Google'
             onSuccess={this.responseGoogle}
             onFailure={this.errorReport}
